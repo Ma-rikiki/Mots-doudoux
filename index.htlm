@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nos Moments</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .week-selector {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .week-selector select {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 25px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .week-selector select:hover {
+            border-color: #3498db;
+        }
+        
+        .message-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .message-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .week-number {
+            color: #3498db;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        
+        .message-text {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+        
+        .message-photo {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 15px;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .date {
+            text-align: right;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            border-top: 1px solid #ecf0f1;
+            padding-top: 15px;
+            margin-top: 20px;
+        }
+        
+        .admin-panel {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 40px;
+        }
+        
+        .admin-panel h3 {
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #34495e;
+            color: white;
+        }
+        
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: #bdc3c7;
+        }
+        
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .toggle-admin {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-admin:hover {
+            transform: scale(1.1);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .message-card {
+                padding: 25px;
+            }
+            
+            .message-text {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Nos Moments</h1>
+            <p>52 semaines de petites attentions</p>
+        </div>
+        
+        <div class="week-selector">
+            <select id="weekSelect" onchange="showWeek()">
+                <option value="current">Semaine actuelle</option>
+            </select>
+        </div>
+        
+        <div id="messageContainer">
+            <!-- Les messages apparaîtront ici -->
+        </div>
+        
+        <div id="adminPanel" class="admin-panel hidden">
+            <h3>✏️ Modifier les messages</h3>
+            <div class="form-group">
+                <label>Semaine :</label>
+                <input type="number" id="adminWeek" min="1" max="52" placeholder="Numéro de semaine (1-52)">
+            </div>
+            <div class="form-group">
+                <label>Message :</label>
+                <textarea id="adminMessage" placeholder="Écris ton message..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Photo (URL ou base64) :</label>
+                <input type="text" id="adminPhoto" placeholder="Colle l'URL de ta photo ou laisse vide">
+            </div>
+            <button class="btn" onclick="saveMessage()">Sauvegarder</button>
+            <button class="btn" onclick="loadMessage()">Charger</button>
+        </div>
+    </div>
+    
+    <button class="toggle-admin" onclick="toggleAdmin()" title="Mode édition">✏️</button>
+    
+    <script>
+        // Stockage des messages en mémoire
+        let messages = {
+            1: {
+                text: "Mon amour, cette première semaine marque le début de notre année de petits mots. Merci d'être là, tout simplement. ❤️",
+                photo: "",
+                date: "2025-01-13"
+            },
+            2: {
+                text: "Cette semaine, j'ai pensé à la façon dont tu me regardes le matin. Ça me donne envie de commencer chaque journée avec toi.",
+                photo: "",
+                date: "2025-01-20"
+            },
+            3: {
+                text: "Merci pour ce café que tu m'as apporté hier soir quand j'étais fatiguée. Ces petites attentions font toute la différence.",
+                photo: "",
+                date: "2025-01-27"
+            }
+        };
+        
+        function getCurrentWeek() {
+            const startDate = new Date('2025-01-13'); // Date de début
+            const today = new Date();
+            const diffTime = today - startDate;
+            const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7)) + 1;
+            return Math.max(1, Math.min(52, diffWeeks));
+        }
+        
+        function initWeekSelector() {
+            const select = document.getElementById('weekSelect');
+            const currentWeek = getCurrentWeek();
+            
+            // Ajouter toutes les semaines
+            for (let i = 1; i <= 52; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Semaine ${i}`;
+                if (i === currentWeek) {
+                    option.textContent += ' (actuelle)';
+                }
+                select.appendChild(option);
+            }
+            
+            // Sélectionner la semaine actuelle
+            select.value = 'current';
+        }
+        
+        function showWeek() {
+            const select = document.getElementById('weekSelect');
+            let weekNumber;
+            
+            if (select.value === 'current') {
+                weekNumber = getCurrentWeek();
+            } else {
+                weekNumber = parseInt(select.value);
+            }
+            
+            displayMessage(weekNumber);
+        }
+        
+        function displayMessage(weekNumber) {
+            const container = document.getElementById('messageContainer');
+            const message = messages[weekNumber];
+            
+            if (message) {
+                container.innerHTML = `
+                    <div class="message-card">
+                        <div class="week-number">Semaine ${weekNumber}</div>
+                        <div class="message-text">${message.text}</div>
+                        ${message.photo ? `<img src="${message.photo}" alt="Photo de la semaine" class="message-photo">` : ''}
+                        <div class="date">${formatDate(message.date)}</div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="message-card">
+                        <div class="week-number">Semaine ${weekNumber}</div>
+                        <div class="message-text">Cette semaine n'a pas encore son message... Patience ! ✨</div>
+                        <div class="date">À venir</div>
+                    </div>
+                `;
+            }
+        }
+        
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('fr-FR', options);
+        }
+        
+        function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('hidden');
+        }
+        
+        function saveMessage() {
+            const week = parseInt(document.getElementById('adminWeek').value);
+            const text = document.getElementById('adminMessage').value;
+            const photo = document.getElementById('adminPhoto').value;
+            
+            if (week && text && week >= 1 && week <= 52) {
+                messages[week] = {
+                    text: text,
+                    photo: photo,
+                    date: new Date().toISOString().split('T')[0]
+                };
+                
+                alert(`Message pour la semaine ${week} sauvegardé !`);
+                
+                // Vider les champs
+                document.getElementById('adminWeek').value = '';
+                document.getElementById('adminMessage').value = '';
+                document.getElementById('adminPhoto').value = '';
+                
+                // Rafraîchir l'affichage si c'est la semaine actuelle
+                const currentDisplayed = document.getElementById('weekSelect').value;
+                if (currentDisplayed == week || (currentDisplayed === 'current' && week === getCurrentWeek())) {
+                    showWeek();
+                }
+            } else {
+                alert('Merci de remplir le numéro de semaine et le message !');
+            }
+        }
+        
+        function loadMessage() {
+            const week = parseInt(document.getElementById('adminWeek').value);
+            if (week && messages[week]) {
+                document.getElementById('adminMessage').value = messages[week].text;
+                document.getElementById('adminPhoto').value = messages[week].photo || '';
+            } else {
+                alert('Aucun message trouvé pour cette semaine.');
+            }
+        }
+        
+        // Initialisation
+        window.onload = function() {
+            initWeekSelector();
+            showWeek();
+        };
+    </script>
+</body>
+</html>
